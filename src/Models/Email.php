@@ -2,6 +2,7 @@
 
 namespace GoMore\LaravelCourier\Models;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 
 class Email
@@ -12,7 +13,7 @@ class Email
 
     protected string $content = '';
 
-    protected array $options = [];
+    protected string $from = '';
 
     protected bool $isHTML = true;
 
@@ -59,6 +60,7 @@ class Email
      */
     public function setOptions(array $options = null): void
     {
+        $this->from = $options['from'] ?? Config::get('courier.from', 'GoMore');
         $this->isHTML = $options['isHTML'] ?? true;
         $this->sendAt = $options['sendAt'] ?? Date::now()->toIso8601ZuluString();
     }
@@ -66,7 +68,7 @@ class Email
     public function getPayload(): array
     {
         return [
-            'from' => 'GoMore',
+            'from' => $this->from,
             'tos' => $this->tos,
             'subject' => $this->subject,
             'content' => $this->content,
